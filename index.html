@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DD1750 Vision Assistant</title>
+    <style>
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        header { text-align: center; margin-bottom: 30px; }
+        
+        h1 { color: #4fc3f7; margin-bottom: 10px; font-size: 2.2em; }
+        
+        .subtitle { color: #90a4ae; font-size: 1.1em; }
+        
+        .credits-banner {
+            background: linear-gradient(135deg, rgba(79, 195, 247, 0.15) 0%, rgba(41, 182, 246, 0.1) 100%);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .credits-info { display: flex; align-items: center; gap: 15px; }
+        
+        .credits-count { font-size: 1.5em; font-weight: bold; color: #4fc3f7; }
+        
+        .credits-label { color: #90a4ae; font-size: 0.9em; }
+        
+        .redeem-btn {
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .redeem-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 187, 106, 0.4);
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card h2 {
+            color: #81d4fa;
+            margin-top: 0;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-number {
+            background: #4fc3f7;
+            color: #1a1a2e;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .form-group { margin-bottom: 15px; }
+        
+        label { display: block; margin-bottom: 5px; color: #b0bec5; font-size: 0.9em; }
+        
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            font-size: 1em;
+        }
+        
+        input:focus { outline: none; border-color: #4fc3f7; }
+        
+        input[type="file"] { display: none; }
+        
+        .file-upload {
+            border: 2px dashed rgba(79, 195, 247, 0.5);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload:hover {
+            border-color: #4fc3f7;
+            background: rgba(79, 195, 247, 0.05);
+        }
+        
+        .file-upload.has-file {
+            border-color: #66bb6a;
+            background: rgba(102, 187, 106, 0.1);
+        }
+        
+        .file-upload-icon { font-size: 2.5em; margin-bottom: 10px; }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%);
+            color: #1a1a2e;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(79, 195, 247, 0.4);
+        }
+        
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: rgba(239, 83, 80, 0.2);
+            color: #ef5350;
+            border: 1px solid #ef5350;
+        }
+        
+        .btn-danger:hover { background: rgba(239, 83, 80, 0.3); }
+        
+        .btn-small { padding: 6px 12px; font-size: 0.85em; }
+        
+        .thumbnails { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        
+        .thumbnail {
+            width: 100px;
+            height: 130px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .thumbnail-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 3px;
+            text-align: center;
+            font-size: 0.75em;
+        }
+        
+        .items-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        
+        .items-table th, .items-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .items-table th { background: rgba(0, 0, 0, 0.3); color: #81d4fa; font-weight: 500; }
+        
+        .items-table tr:hover { background: rgba(255, 255, 255, 0.05); }
+        
+        .items-table input { width: 100%; padding: 6px 8px; font-size: 0.9em; }
+        
+        .items-table .qty-input { width: 60px; }
+        
+        .items-table .nsn-input { width: 120px; }
+        
+        .confidence-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+        
+        .confidence-high { background: rgba(102, 187, 106, 0.2); color: #66bb6a; }
+        .confidence-medium { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .confidence-low { background: rgba(239, 83, 80, 0.2); color: #ef5350; }
+        
+        .header-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .status { padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        
+        .status-info {
+            background: rgba(79, 195, 247, 0.1);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+        
+        .status-success {
+            background: rgba(102, 187, 106, 0.1);
+            border: 1px solid rgba(102, 187, 106, 0.3);
+        }
+        
+        .status-error {
+            background: rgba(239, 83, 80, 0.1);
+            border: 1px solid rgba(239, 83, 80, 0.3);
+        }
+        
+        .status-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #4fc3f7;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .hidden { display: none !important; }
+        
+        .page-range {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+        }
+        
+        .page-range input { width: 70px; }
+        
+        .action-buttons { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal {
+            background: #1a1a2e;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .modal h3 { color: #4fc3f7; margin-top: 0; }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: #78909c;
+            font-size: 1.5em;
+            cursor: pointer;
+            float: right;
+            padding: 0;
+            line-height: 1;
+        }
+        
+        .code-input {
+            font-family: monospace;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+        
+        .payment-info {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+        
+        .payment-info strong { color: #66bb6a; }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #78909c;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .header-grid { grid-template-columns: 1fr; }
+            .credits-banner { flex-direction: column; text-align: center; }
+            .items-table { font-size: 0.85em; }
+            .items-table th, .items-table td { padding: 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 DD1750 Vision Assistant</h1>
+            <p class="subtitle">Extract items from any BOM format using AI vision</p>
+        </header>
+        
+        <!-- Credits Banner -->
+        <div class="credits-banner">
+            <div class="credits-info">
+                <div>
+                    <span class="credits-count" id="creditsCount">{{ remaining_extractions }}</span>
+                    <span class="credits-label">extractions remaining</span>
+                </div>
+                {% if remaining_extractions <= 3 and remaining_extractions > 0 %}
+                <div style="color: #ffc107; font-size: 0.85em;">
+                    ⚠️ Running low on extractions
+                </div>
+                {% endif %}
+            </div>
+            <button class="redeem-btn" onclick="showRedeemCode()">
+                🎟️ Redeem Access Code
+            </button>
+        </div>
+        
+        <!-- Step 1: Upload PDF -->
+        <div class="card">
+            <h2><span class="step-number">1</span> Upload BOM PDF</h2>
+            <label for="bomFile" class="file-upload" id="fileUploadArea">
+                <div class="file-upload-icon">📄</div>
+                <div id="fileLabel">Click to select a PDF or drag and drop</div>
+                <div style="color: #78909c; font-size: 0.85em; margin-top: 5px;">Supports handwritten, scanned, EPP, and other BOM formats</div>
+            </label>
+            <input type="file" id="bomFile" accept=".pdf" onchange="handleFileSelect(event)">
+            
+            <div id="thumbnailsContainer" class="hidden">
+                <div class="thumbnails" id="thumbnails"></div>
+                <div class="page-range">
+                    <span>Extract pages:</span>
+                    <input type="number" id="startPage" value="1" min="1"> to 
+                    <input type="number" id="endPage" value="1" min="1">
+                    <span id="pageCount"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 2: Extract Items -->
+        <div class="card">
+            <h2><span class="step-number">2</span> Extract Items</h2>
+            <div id="extractStatus"></div>
+            <button class="btn-primary" id="extractBtn" onclick="extractItems()" disabled>
+                🔍 Extract Items with AI
+            </button>
+            <p style="color: #78909c; font-size: 0.85em; margin-top: 10px;">
+                Uses 1 extraction credit per PDF processed
+            </p>
+            
+            <div id="itemsContainer" class="hidden">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px;">
+                    <h3 style="margin: 0; color: #81d4fa;">Extracted Items</h3>
+                    <button class="btn-secondary btn-small" onclick="addNewItem()">+ Add Item</button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="items-table" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">#</th>
+                                <th>Description</th>
+                                <th style="width: 130px;">NSN</th>
+                                <th style="width: 70px;">Qty</th>
+                                <th style="width: 80px;">Confidence</th>
+                                <th style="width: 60px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 3: Header Information -->
+        <div class="card">
+            <h2><span class="step-number">3</span> DD1750 Header Information</h2>
+            <div class="header-grid">
+                <div class="form-group">
+                    <label>Packed By</label>
+                    <input type="text" id="packedBy" placeholder="Name/Unit">
+                </div>
+                <div class="form-group">
+                    <label>No. Boxes</label>
+                    <input type="text" id="noBoxes" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label>Requisition No.</label>
+                    <input type="text" id="reqNo" placeholder="Optional">
+                </div>
+                <div class="form-group">
+                    <label>Order No.</label>
+                    <input type="text" id="orderNo" placeholder="Optional">
+                </div>
+                <div class="form-group">
+                    <label>End Item</label>
+                    <input type="text" id="endItem" placeholder="Equipment/Vehicle">
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="formDate">
+                </div>
+                <div class="form-group">
+                    <label>Certifier Name</label>
+                    <input type="text" id="certName" placeholder="Typed Name">
+                </div>
+                <div class="form-group">
+                    <label>Certifier Title</label>
+                    <input type="text" id="certTitle" placeholder="Rank/Title">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Step 4: Generate -->
+        <div class="card">
+            <h2><span class="step-number">4</span> Generate DD1750</h2>
+            <div id="generateStatus"></div>
+            <div class="action-buttons">
+                <button class="btn-success" id="generateBtn" onclick="generatePDF()" disabled>
+                    📝 Generate DD1750 PDF
+                </button>
+                <button class="btn-primary" id="downloadBtn" onclick="downloadPDF()" disabled>
+                    ⬇️ Download PDF
+                </button>
+                <button class="btn-secondary" onclick="startOver()">
+                    🔄 Start Over
+                </button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>DD1750 Vision Assistant • Powered by Claude AI</p>
+            <p style="font-size: 0.8em;">Need more extractions? Contact for access codes</p>
+        </footer>
+    </div>
+    
+    <!-- Redeem Code Modal -->
+    <div id="redeemModal" class="modal-overlay hidden">
+        <div class="modal">
+            <button class="modal-close" onclick="hideRedeemCode()">&times;</button>
+            <h3>🎟️ Redeem Access Code</h3>
+            
+            <div class="form-group">
+                <label>Enter your access code</label>
+                <input type="text" id="accessCode" class="code-input" placeholder="DD17-XXXX-0000" maxlength="14">
+            </div>
+            
+            <button class="btn-success" style="width: 100%;" onclick="redeemCode()">
+                Redeem Code
+            </button>
+            
+            <div id="redeemStatus" style="margin-top: 15px;"></div>
+            
+            <div class="payment-info">
+                <strong>Need an access code?</strong><br>
+                Contact via Venmo/CashApp to purchase extraction credits.
+                <br><br>
+                <strong>$5 = 25 extractions</strong>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let extractedItems = [];
+        let pdfUploaded = false;
+        let remainingExtractions = {{ remaining_extractions }};
+        
+        document.getElementById('formDate').valueAsDate = new Date();
+        
+        // Drag and drop
+        const uploadArea = document.getElementById('fileUploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#4fc3f7';
+            uploadArea.style.background = 'rgba(79, 195, 247, 0.1)';
+        });
+        
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '';
+            uploadArea.style.background = '';
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '';
+            uploadArea.style.background = '';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('bomFile').files = files;
+                handleFileSelect({ target: { files: files } });
+            }
+        });
+        
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const fileLabel = document.getElementById('fileLabel');
+            fileLabel.innerHTML = `<span class="loading"></span> Processing ${file.name}...`;
+            
+            const formData = new FormData();
+            formData.append('bom_file', file);
+            
+            try {
+                const response = await fetch('/upload', { method: 'POST', body: formData });
+                const data = await response.json();
+                
+                if (data.success) {
+                    pdfUploaded = true;
+                    fileLabel.textContent = `✓ ${file.name}`;
+                    uploadArea.classList.add('has-file');
+                    
+                    const container = document.getElementById('thumbnailsContainer');
+                    const thumbnailsEl = document.getElementById('thumbnails');
+                    thumbnailsEl.innerHTML = '';
+                    
+                    data.thumbnails.forEach(thumb => {
+                        const div = document.createElement('div');
+                        div.className = 'thumbnail';
+                        div.innerHTML = `
+                            <img src="${thumb.data}" alt="Page ${thumb.page}">
+                            <div class="thumbnail-label">Page ${thumb.page}</div>
+                        `;
+                        thumbnailsEl.appendChild(div);
+                    });
+                    
+                    document.getElementById('startPage').value = 1;
+                    document.getElementById('startPage').max = data.pages;
+                    document.getElementById('endPage').value = data.pages;
+                    document.getElementById('endPage').max = data.pages;
+                    document.getElementById('pageCount').textContent = `(${data.pages} pages total)`;
+                    
+                    container.classList.remove('hidden');
+                } else {
+                    fileLabel.textContent = 'Click to select a PDF or drag and drop';
+                    alert('Error: ' + data.error);
+                    pdfUploaded = false;
+                }
+            } catch (error) {
+                fileLabel.textContent = 'Click to select a PDF or drag and drop';
+                alert('Upload failed: ' + error.message);
+                pdfUploaded = false;
+            }
+            
+            updateButtons();
+        }
+        
+        async function extractItems() {
+            if (remainingExtractions <= 0) {
+                showRedeemCode();
+                return;
+            }
+            
+            const startPage = parseInt(document.getElementById('startPage').value) - 1;
+            const endPage = parseInt(document.getElementById('endPage').value);
+            
+            const statusEl = document.getElementById('extractStatus');
+            const btn = document.getElementById('extractBtn');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Extracting...';
+            statusEl.className = 'status status-info';
+            statusEl.textContent = 'Analyzing PDF with AI vision. This may take a minute...';
+            
+            try {
+                const response = await fetch('/extract', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ start_page: startPage, end_page: endPage })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    extractedItems = data.items;
+                    remainingExtractions = data.remaining_extractions;
+                    document.getElementById('creditsCount').textContent = remainingExtractions;
+                    
+                    renderItems();
+                    statusEl.className = 'status status-success';
+                    statusEl.textContent = `✓ Extracted ${data.count} items. Review and edit below.`;
+                    document.getElementById('itemsContainer').classList.remove('hidden');
+                } else if (data.need_credits) {
+                    statusEl.className = 'status status-warning';
+                    statusEl.textContent = '⚠️ ' + data.error;
+                    showRedeemCode();
+                } else {
+                    statusEl.className = 'status status-error';
+                    statusEl.textContent = '❌ ' + data.error;
+                }
+            } catch (error) {
+                statusEl.className = 'status status-error';
+                statusEl.textContent = '❌ Extraction failed: ' + error.message;
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '🔍 Extract Items with AI';
+            updateButtons();
+        }
+        
+        function renderItems() {
+            const tbody = document.getElementById('itemsBody');
+            tbody.innerHTML = '';
+            
+            extractedItems.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><input type="text" value="${escapeHtml(item.description)}" onchange="updateItem(${index}, 'description', this.value)"></td>
+                    <td><input type="text" class="nsn-input" value="${escapeHtml(item.nsn)}" onchange="updateItem(${index}, 'nsn', this.value)"></td>
+                    <td><input type="number" class="qty-input" value="${item.qty}" min="1" onchange="updateItem(${index}, 'qty', parseInt(this.value))"></td>
+                    <td><span class="confidence-badge confidence-${item.confidence}">${item.confidence}</span></td>
+                    <td><button class="btn-danger btn-small" onclick="removeItem(${index})">✕</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            updateButtons();
+        }
+        
+        function updateItem(index, field, value) { extractedItems[index][field] = value; }
+        
+        function removeItem(index) { extractedItems.splice(index, 1); renderItems(); }
+        
+        function addNewItem() {
+            extractedItems.push({
+                id: extractedItems.length + 1,
+                description: '',
+                nsn: '',
+                qty: 1,
+                confidence: 'high',
+                notes: '',
+                unit_of_issue: 'EA'
+            });
+            renderItems();
+            const inputs = document.querySelectorAll('#itemsBody tr:last-child input');
+            if (inputs.length > 0) inputs[0].focus();
+        }
+        
+        async function generatePDF() {
+            const statusEl = document.getElementById('generateStatus');
+            const btn = document.getElementById('generateBtn');
+            
+            if (extractedItems.length === 0) {
+                statusEl.className = 'status status-error';
+                statusEl.textContent = '❌ No items to generate. Please extract or add items first.';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Generating...';
+            statusEl.className = 'status status-info';
+            statusEl.textContent = 'Generating DD1750 PDF...';
+            
+            const header = {
+                packed_by: document.getElementById('packedBy').value,
+                no_boxes: document.getElementById('noBoxes').value,
+                requisition_no: document.getElementById('reqNo').value,
+                order_no: document.getElementById('orderNo').value,
+                end_item: document.getElementById('endItem').value,
+                date: document.getElementById('formDate').value,
+                certifier_name: document.getElementById('certName').value,
+                certifier_title: document.getElementById('certTitle').value
+            };
+            
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items: extractedItems, header: header })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusEl.className = 'status status-success';
+                    statusEl.textContent = '✓ ' + data.message + '. Click Download to save.';
+                    document.getElementById('downloadBtn').disabled = false;
+                } else {
+                    statusEl.className = 'status status-error';
+                    statusEl.textContent = '❌ ' + data.error;
+                }
+            } catch (error) {
+                statusEl.className = 'status status-error';
+                statusEl.textContent = '❌ Generation failed: ' + error.message;
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '📝 Generate DD1750 PDF';
+        }
+        
+        function downloadPDF() { window.location.href = '/download'; }
+        
+        async function startOver() {
+            if (extractedItems.length > 0 && !confirm('This will clear all current data. Continue?')) return;
+            
+            await fetch('/clear');
+            
+            extractedItems = [];
+            pdfUploaded = false;
+            
+            document.getElementById('bomFile').value = '';
+            document.getElementById('fileLabel').textContent = 'Click to select a PDF or drag and drop';
+            document.getElementById('fileUploadArea').classList.remove('has-file');
+            document.getElementById('thumbnailsContainer').classList.add('hidden');
+            document.getElementById('itemsContainer').classList.add('hidden');
+            document.getElementById('extractStatus').innerHTML = '';
+            document.getElementById('generateStatus').innerHTML = '';
+            document.getElementById('itemsBody').innerHTML = '';
+            
+            document.getElementById('packedBy').value = '';
+            document.getElementById('noBoxes').value = '';
+            document.getElementById('reqNo').value = '';
+            document.getElementById('orderNo').value = '';
+            document.getElementById('endItem').value = '';
+            document.getElementById('certName').value = '';
+            document.getElementById('certTitle').value = '';
+            document.getElementById('formDate').valueAsDate = new Date();
+            
+            updateButtons();
+        }
+        
+        function updateButtons() {
+            document.getElementById('extractBtn').disabled = !pdfUploaded || remainingExtractions <= 0;
+            document.getElementById('generateBtn').disabled = extractedItems.length === 0;
+            document.getElementById('downloadBtn').disabled = true;
+        }
+        
+        // Access code modal
+        function showRedeemCode() {
+            document.getElementById('redeemModal').classList.remove('hidden');
+            document.getElementById('accessCode').focus();
+        }
+        
+        function hideRedeemCode() {
+            document.getElementById('redeemModal').classList.add('hidden');
+            document.getElementById('accessCode').value = '';
+            document.getElementById('redeemStatus').innerHTML = '';
+        }
+        
+        async function redeemCode() {
+            const code = document.getElementById('accessCode').value.trim();
+            const statusEl = document.getElementById('redeemStatus');
+            
+            if (!code) {
+                statusEl.innerHTML = '<div class="status status-error">Please enter an access code</div>';
+                return;
+            }
+            
+            try {
+                const response = await fetch('/redeem-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    remainingExtractions = data.remaining_extractions;
+                    document.getElementById('creditsCount').textContent = remainingExtractions;
+                    statusEl.innerHTML = `<div class="status status-success">✓ ${data.message}</div>`;
+                    updateButtons();
+                    
+                    setTimeout(() => {
+                        hideRedeemCode();
+                    }, 2000);
+                } else {
+                    statusEl.innerHTML = `<div class="status status-error">❌ ${data.error}</div>`;
+                }
+            } catch (error) {
+                statusEl.innerHTML = `<div class="status status-error">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Close modal on backdrop click
+        document.getElementById('redeemModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) hideRedeemCode();
+        });
+        
+        // Auto-format access code input
+        document.getElementById('accessCode').addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase();
+        });
+        
+        // Enter key to redeem
+        document.getElementById('accessCode').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') redeemCode();
+        });
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+        
+        updateButtons();
+    </script>
+</body>
+</html>
